@@ -90,10 +90,6 @@ int	ipmi_enabled = 0;
 #define IPMI_SDR_TYPEFULL		1
 #define IPMI_SDR_TYPECOMPACT		2
 
-#define byteof(x) ((x) >> 3)
-#define bitof(x)  (1L << ((x) & 0x7))
-#define TB(b,m)	  (data[2+byteof(b)] & bitof(b))
-
 #ifdef IPMI_DEBUG
 int	ipmi_dbg = 0;
 #define dbg_printf(lvl, fmt...) \
