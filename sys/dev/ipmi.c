@@ -251,7 +251,7 @@ int
 bmc_io_wait(struct ipmi_softc *sc, struct ipmi_iowait *a)
 {
 	volatile u_int8_t	v;
-	int			count = 5000000; /* == 5s XXX can be shorter */
+	int			count = cold ? 15000 : 500;
 
 	while (count--) {
 		v = bmc_read(sc, a->offset);
