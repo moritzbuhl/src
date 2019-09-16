@@ -437,7 +437,10 @@ vfs_lookup(struct nameidata *ndp)
 		 */
 		if (cnp->cn_nameptr[0] == '\0') {
 			if (ndp->ni_dvp == NULL && wantparent) {
-				error = EISDIR;
+				if (cnp->cn_nameiop == CREATE)
+					error = EEXIST;
+				else
+					error = EBUSY;
 				goto bad;
 			}
 			ndp->ni_vp = dp;
