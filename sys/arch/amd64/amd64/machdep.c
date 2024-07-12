@@ -100,6 +100,7 @@
 #include <machine/mpbiosvar.h>
 #include <machine/kcore.h>
 #include <machine/tss.h>
+#include <machine/kasan.h>
 
 #include <dev/isa/isareg.h>
 #include <dev/ic/i8042reg.h>
@@ -1428,6 +1429,9 @@ init_x86_64(paddr_t first_avail)
 	bios_memmap_t *bmp;
 	int x, ist;
 	uint64_t max_dm_size = ((uint64_t)512 * NUM_L4_SLOT_DIRECT) << 30;
+#ifdef KASAN
+	vaddr_t kasan_maxkvaddr;
+#endif
 
 	/*
 	 * locore0 mapped 3 pages for use before the pmap is initialized
@@ -1752,6 +1756,9 @@ init_x86_64(paddr_t first_avail)
 		}
 	}
 
+#ifdef KASAN
+	kasan_maxkvaddr =
+#endif
 	pmap_growkernel(VM_MIN_KERNEL_ADDRESS + 32 * 1024 * 1024);
 
 	pmap_kenter_pa(idt_vaddr, idt_paddr, PROT_READ | PROT_WRITE);
@@ -1805,6 +1812,11 @@ init_x86_64(paddr_t first_avail)
 	ddb_init();
 	if (boothowto & RB_KDB)
 		db_enter();
+#endif
+#ifdef KASAN
+	kasan_init();
+        kasan_enter_shad_multi((vaddr_t)VM_MIN_KERNEL_ADDRESS,
+	    kasan_maxkvaddr - VM_MIN_KERNEL_ADDRESS); /* XXX: doing it all */
 #endif
 }
 
