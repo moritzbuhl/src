@@ -98,7 +98,7 @@ CMACHFLAGS+=	-mno-retpoline -fcf-protection=none
 .endif
 .else
 CMACHFLAGS+=	-mretpoline-external-thunk -fcf-protection=branch
-CMACHFLAGS+=	-fret-clean
+#CMACHFLAGS+=	-fret-clean
 .endif
 .if ${COMPILER_VERSION:Mclang}
 NO_INTEGR_AS=	-no-integrated-as

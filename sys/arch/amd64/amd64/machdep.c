@@ -100,7 +100,9 @@
 #include <machine/mpbiosvar.h>
 #include <machine/kcore.h>
 #include <machine/tss.h>
+#ifdef KASAN
 #include <machine/kasan.h>
+#endif
 
 #include <dev/isa/isareg.h>
 #include <dev/ic/i8042reg.h>
