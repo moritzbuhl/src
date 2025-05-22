@@ -148,8 +148,8 @@ kasan_enter_shad_multi(vaddr_t va, size_t sz)
 	vaddr_t sva;
 
 	sva = (vaddr_t)kasan_addr_to_shad(va);
+	sva &= PMAP_PA_MASK;
 	ssz = (sz + KASAN_SHADOW_SCALE_SIZE - 1) / KASAN_SHADOW_SCALE_SIZE;
-	sva = (sva / PAGE_SIZE) * PAGE_SIZE;
 	spgs = (ssz + PAGE_SIZE - 1) / PAGE_SIZE;
 
 printf("early start: 0x%llx\n", VA_SIGN_NEG((L4_SLOT_EARLY * NBPD_L4)));
@@ -235,8 +235,8 @@ kasan_bootstrap(void) {
 	size_t i;
 	vaddr_t sva;
 
-	sva = (sva / PAGE_SIZE) * PAGE_SIZE;
 	sva = (vaddr_t)kasan_addr_to_shad((vaddr_t)proc0paddr + USPACE - 16);
+	sva &= PMAP_PA_MASK;
 
 	for (i = 0; i < UPAGES; i++)
 		kasan_enter_early_shad(sva + i * PAGE_SIZE);
