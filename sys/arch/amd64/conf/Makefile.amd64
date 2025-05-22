@@ -161,7 +161,9 @@ CFLAGS+=	-fsanitize=undefined
 CFLAGS+=	-fno-wrapv
 .endif
 
-KASAN_ENABLED = -fsanitize=kernel-address --param asan-globals=1 -mllvm -asan-instrumentation-with-call-threshold=0 -mllvm -asan-mapping-offset=0xdfff908000000000
+# KASAN_OFFSET = KASAN_SHADOW_START - (KERNBASE >> 3)
+KASAN_OFFSET = 0xdfff908000000000
+KASAN_ENABLED = -fsanitize=kernel-address --param asan-globals=1 -mllvm -asan-instrumentation-with-call-threshold=0 -mllvm -asan-mapping-offset=${KASAN_OFFSET}
 
 .if ${IDENT:M-DKASAN} && ${COMPILER_VERSION:Mclang}
 CFLAGS+=${KASAN_ENABLED}
