@@ -88,10 +88,10 @@ SORTR=		sort -R
 CMACHFLAGS+=	-fno-stack-protector
 .endif
 .if ${IDENT:M-DDDB}
-.if !${IDENT:M-DKASAN}
+. if !(${IDENT:M-DKASAN} && ${COMPILER_VERSION:Mclang})
 # KASAN does not work with -msave-args, there is a clang bug.
 CMACHFLAGS+=	-msave-args
-.endif
+. endif
 .endif
 .if ${IDENT:M-DSMALL_KERNEL}
 SORTR=		cat
@@ -165,10 +165,14 @@ CFLAGS+=	-fno-wrapv
 .endif
 
 .if ${IDENT:M-DKASAN} && ${COMPILER_VERSION:Mclang}
-# KASAN_OFFSET = KASAN_SHADOW_START - (KERNBASE >> 3)
-KASAN_OFFSET = 0xdfff908000000000
-KASAN_ENABLED = -fsanitize=kernel-address --param asan-globals=1 -mllvm -asan-instrumentation-with-call-threshold=0 -mllvm -asan-mapping-offset=${KASAN_OFFSET}
-CFLAGS+=${KASAN_ENABLED}
+# KASAN_OFFSET =	KASAN_SHADOW_START - (KERNBASE >> 3)
+KASAN_OFFSET =		0xdfff908000000000
+# Some files don't need asan-globals=1
+CFLAGS+=	-Wno-unused-command-line-argument
+KASAN_ENABLED =	-fsanitize=kernel-address --param asan-globals=1 -mllvm \
+		-asan-instrumentation-with-call-threshold=0 -mllvm \
+		-asan-mapping-offset=${KASAN_OFFSET}
+CFLAGS+=	${KASAN_ENABLED}
 .endif
 
 %LOAD
